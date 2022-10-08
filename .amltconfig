@@ -1,0 +1,1 @@
+{"project_name": "ddpm-plug", "storage_account_name": "msramcgdrive", "container_name": "amulet", "blob_storage_account_name": "msramcgdrive", "registry_name": "projects", "local_path": "/root/Desktop/diffusion_priors", "default_output_dir": "/root/Desktop/diffusion_priors/amlt", "project_uuid": "7334762290.25661-910f7eb0-cafd-4ec8-b7f2-b3c1a05246b7", "version": "9.9.2"}
