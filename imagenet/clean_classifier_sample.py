@@ -135,8 +135,7 @@ while len(all_images) * args.batch_size < args.num_samples:
     diff_net.eval()
     classes = torch.randint(low=0, high=1000, size=(args.batch_size,), device=device)
 
-    bar = tqdm.tqdm(range(steps))
-    for i, _ in enumerate(bar):
+    for i, _ in enumerate(range(steps)):
         # Select t      
         t = ((steps-i)/1.5 + (steps-i)/3*math.cos(i/10))/steps*800 + 200 # Linearly decreasing + cosine
         t = np.array([t + np.random.randint(-50, 51) for _ in range(1)]).astype(int) # Add noise to t
@@ -153,7 +152,6 @@ while len(all_images) * args.batch_size < args.num_samples:
         epsilon_pred = pred[:,:3,:,:] # Use predicted noise only
         
         loss = F.mse_loss(epsilon_pred, epsilon)
-        bar.set_description("Loss: {:.4f}".format(loss))
 
         opt.zero_grad()        
         loss.backward()
