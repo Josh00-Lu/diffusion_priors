@@ -67,7 +67,7 @@ jobs:
     command:
     - nvidia-smi
     - PATH_FLAGS="--classifier_path models/128x128_classifier.pt --model_path models/128x128_diffusion.pt"
-    - SAMPLING_FLAGS="--image_size 256 --batch_size 16 --num_samples 50000 --class_cond True"
+    - SAMPLING_FLAGS="--image_size 128 --batch_size 16 --num_samples 50000 --class_cond True"
     - python clean_classifier_sample.py $$PATH_FLAGS $$SAMPLING_FLAGS --save_base $$AMLT_OUTPUT_DIR'/128-cond-plug'
     priority: high
 
@@ -76,6 +76,6 @@ jobs:
     command:
     - nvidia-smi
     - PATH_FLAGS="--classifier_path models/64x64_classifier.pt --model_path models/64x64_diffusion.pt"
-    - SAMPLING_FLAGS="--image_size 256 --batch_size 48 --num_samples 50000 --class_cond True"
+    - SAMPLING_FLAGS="--image_size 64 --batch_size 48 --num_samples 50000 --class_cond True"
     - python clean_classifier_sample.py $$PATH_FLAGS $$SAMPLING_FLAGS --save_base $$AMLT_OUTPUT_DIR'/64-cond-plug'
     priority: high
