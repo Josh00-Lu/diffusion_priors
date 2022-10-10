@@ -1,0 +1,350 @@
+description: Wikiarts DDPM
+
+target:
+
+  service: aisc
+  name: msrresrchvc
+
+environment:
+  
+  image: jinchaolove/dl:deepops-cuda11.6-cudnn8-ubuntu20.04
+  # image: cyzheng/base_singularity:v1
+  # registry: msrresrchcr.azurecr.io
+  # username: msrresrchcr
+
+  setup:
+    - pip install torch torchvision --extra-index-url https://download.pytorch.org/whl/cu116
+    - pip install matplotlib pandas tqdm numpy
+    - pip install einops
+    - pip install mpi4py
+
+data:
+  # You need to run "python src/download_data.py" beforehand
+  # to generate the dataset to be uploaded
+  # don't forget to run 'amlt storage upload'
+  local_dir: $CONFIG_DIR/../datasets/Paintings
+
+  # The data will be uploaded to your default storage.
+  #   Check ``multi_storage.yaml'' for more flexibility.
+  remote_dir: datasets/Paintings
+  storage_id : data_container
+
+code:
+  # local directory of the code. this will be uploaded to the server.
+  local_dir: $CONFIG_DIR/imagenet
+
+storage:
+  data_container:
+    #storage_account_name: msramcgteamdrive #asia
+    storage_account_name: msramcgdrive #central us
+    container_name: v-haofeilu
+    mount_dir: /mnt/data
+
+
+jobs:
+  - name: 256-ucond-plug-1
+    sku: G1-V100
+    command:
+    - nvidia-smi
+    - PATH_FLAGS="--classifier_path models/256x256_classifier.pt --model_path models/256x256_diffusion_uncond.pt"
+    - SAMPLING_FLAGS="--image_size 256 --batch_size 1 --num_samples 5000 --class_cond False"
+    - python clean_classifier_sample.py $$PATH_FLAGS $$SAMPLING_FLAGS --save_base $$AMLT_OUTPUT_DIR'/256-ucond-plug'
+    priority: high
+
+  - name: 256-cond-plug-1
+    sku: G1-V100
+    command:
+    - nvidia-smi
+    - PATH_FLAGS="--classifier_path models/256x256_classifier.pt --model_path models/256x256_diffusion.pt"
+    - SAMPLING_FLAGS="--image_size 256 --batch_size 1 --num_samples 5000 --class_cond True"
+    - python clean_classifier_sample.py $$PATH_FLAGS $$SAMPLING_FLAGS --save_base $$AMLT_OUTPUT_DIR'/256-cond-plug'
+    priority: high
+
+  - name: 128-cond-plug-1
+    sku: G1-V100
+    command:
+    - nvidia-smi
+    - PATH_FLAGS="--classifier_path models/128x128_classifier.pt --model_path models/128x128_diffusion.pt"
+    - SAMPLING_FLAGS="--image_size 128 --batch_size 8 --num_samples 12500 --class_cond True"
+    - python clean_classifier_sample.py $$PATH_FLAGS $$SAMPLING_FLAGS --save_base $$AMLT_OUTPUT_DIR'/128-cond-plug'
+    priority: high
+
+  - name: 64-cond-plug
+    sku: G1-V100
+    command:
+    - nvidia-smi
+    - PATH_FLAGS="--classifier_path models/64x64_classifier.pt --model_path models/64x64_diffusion.pt"
+    - SAMPLING_FLAGS="--image_size 64 --batch_size 24 --num_samples 25000 --class_cond True"
+    - python clean_classifier_sample.py $$PATH_FLAGS $$SAMPLING_FLAGS --save_base $$AMLT_OUTPUT_DIR'/64-cond-plug'
+    priority: high
+
+
+
+
+
+  - name: 256-ucond-plug-2
+    sku: G1-V100
+    command:
+    - nvidia-smi
+    - PATH_FLAGS="--classifier_path models/256x256_classifier.pt --model_path models/256x256_diffusion_uncond.pt"
+    - SAMPLING_FLAGS="--image_size 256 --batch_size 1 --num_samples 5000 --class_cond False"
+    - python clean_classifier_sample.py $$PATH_FLAGS $$SAMPLING_FLAGS --save_base $$AMLT_OUTPUT_DIR'/256-ucond-plug'
+    priority: high
+
+  - name: 256-cond-plug-2
+    sku: G1-V100
+    command:
+    - nvidia-smi
+    - PATH_FLAGS="--classifier_path models/256x256_classifier.pt --model_path models/256x256_diffusion.pt"
+    - SAMPLING_FLAGS="--image_size 256 --batch_size 1 --num_samples 5000 --class_cond True"
+    - python clean_classifier_sample.py $$PATH_FLAGS $$SAMPLING_FLAGS --save_base $$AMLT_OUTPUT_DIR'/256-cond-plug'
+    priority: high
+
+  - name: 128-cond-plug-2
+    sku: G1-V100
+    command:
+    - nvidia-smi
+    - PATH_FLAGS="--classifier_path models/128x128_classifier.pt --model_path models/128x128_diffusion.pt"
+    - SAMPLING_FLAGS="--image_size 128 --batch_size 8 --num_samples 12500 --class_cond True"
+    - python clean_classifier_sample.py $$PATH_FLAGS $$SAMPLING_FLAGS --save_base $$AMLT_OUTPUT_DIR'/128-cond-plug'
+    priority: high
+
+
+
+
+
+
+
+
+
+  - name: 256-ucond-plug-3
+    sku: G1-V100
+    command:
+    - nvidia-smi
+    - PATH_FLAGS="--classifier_path models/256x256_classifier.pt --model_path models/256x256_diffusion_uncond.pt"
+    - SAMPLING_FLAGS="--image_size 256 --batch_size 1 --num_samples 5000 --class_cond False"
+    - python clean_classifier_sample.py $$PATH_FLAGS $$SAMPLING_FLAGS --save_base $$AMLT_OUTPUT_DIR'/256-ucond-plug'
+    priority: high
+
+  - name: 256-cond-plug-3
+    sku: G1-V100
+    command:
+    - nvidia-smi
+    - PATH_FLAGS="--classifier_path models/256x256_classifier.pt --model_path models/256x256_diffusion.pt"
+    - SAMPLING_FLAGS="--image_size 256 --batch_size 1 --num_samples 5000 --class_cond True"
+    - python clean_classifier_sample.py $$PATH_FLAGS $$SAMPLING_FLAGS --save_base $$AMLT_OUTPUT_DIR'/256-cond-plug'
+    priority: high
+
+
+
+
+
+
+
+  - name: 256-ucond-plug-4
+    sku: G1-V100
+    command:
+    - nvidia-smi
+    - PATH_FLAGS="--classifier_path models/256x256_classifier.pt --model_path models/256x256_diffusion_uncond.pt"
+    - SAMPLING_FLAGS="--image_size 256 --batch_size 1 --num_samples 5000 --class_cond False"
+    - python clean_classifier_sample.py $$PATH_FLAGS $$SAMPLING_FLAGS --save_base $$AMLT_OUTPUT_DIR'/256-ucond-plug'
+    priority: high
+
+  - name: 256-cond-plug-4
+    sku: G1-V100
+    command:
+    - nvidia-smi
+    - PATH_FLAGS="--classifier_path models/256x256_classifier.pt --model_path models/256x256_diffusion.pt"
+    - SAMPLING_FLAGS="--image_size 256 --batch_size 1 --num_samples 5000 --class_cond True"
+    - python clean_classifier_sample.py $$PATH_FLAGS $$SAMPLING_FLAGS --save_base $$AMLT_OUTPUT_DIR'/256-cond-plug'
+    priority: high
+
+
+
+
+
+
+  - name: 256-ucond-plug-5
+    sku: G1-V100
+    command:
+    - nvidia-smi
+    - PATH_FLAGS="--classifier_path models/256x256_classifier.pt --model_path models/256x256_diffusion_uncond.pt"
+    - SAMPLING_FLAGS="--image_size 256 --batch_size 1 --num_samples 5000 --class_cond False"
+    - python clean_classifier_sample.py $$PATH_FLAGS $$SAMPLING_FLAGS --save_base $$AMLT_OUTPUT_DIR'/256-ucond-plug'
+    priority: high
+
+  - name: 256-cond-plug-5
+    sku: G1-V100
+    command:
+    - nvidia-smi
+    - PATH_FLAGS="--classifier_path models/256x256_classifier.pt --model_path models/256x256_diffusion.pt"
+    - SAMPLING_FLAGS="--image_size 256 --batch_size 1 --num_samples 5000 --class_cond True"
+    - python clean_classifier_sample.py $$PATH_FLAGS $$SAMPLING_FLAGS --save_base $$AMLT_OUTPUT_DIR'/256-cond-plug'
+    priority: high
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  - name: 256-ucond-plug-1-2
+    sku: G1-V100
+    command:
+    - nvidia-smi
+    - PATH_FLAGS="--classifier_path models/256x256_classifier.pt --model_path models/256x256_diffusion_uncond.pt"
+    - SAMPLING_FLAGS="--image_size 256 --batch_size 1 --num_samples 5000 --class_cond False"
+    - python clean_classifier_sample.py $$PATH_FLAGS $$SAMPLING_FLAGS --save_base $$AMLT_OUTPUT_DIR'/256-ucond-plug'
+    priority: high
+
+  - name: 256-cond-plug-1-2
+    sku: G1-V100
+    command:
+    - nvidia-smi
+    - PATH_FLAGS="--classifier_path models/256x256_classifier.pt --model_path models/256x256_diffusion.pt"
+    - SAMPLING_FLAGS="--image_size 256 --batch_size 1 --num_samples 5000 --class_cond True"
+    - python clean_classifier_sample.py $$PATH_FLAGS $$SAMPLING_FLAGS --save_base $$AMLT_OUTPUT_DIR'/256-cond-plug'
+    priority: high
+
+  - name: 128-cond-plug-1-2
+    sku: G1-V100
+    command:
+    - nvidia-smi
+    - PATH_FLAGS="--classifier_path models/128x128_classifier.pt --model_path models/128x128_diffusion.pt"
+    - SAMPLING_FLAGS="--image_size 128 --batch_size 8 --num_samples 12500 --class_cond True"
+    - python clean_classifier_sample.py $$PATH_FLAGS $$SAMPLING_FLAGS --save_base $$AMLT_OUTPUT_DIR'/128-cond-plug'
+    priority: high
+
+  - name: 64-cond-plug-2
+    sku: G1-V100
+    command:
+    - nvidia-smi
+    - PATH_FLAGS="--classifier_path models/64x64_classifier.pt --model_path models/64x64_diffusion.pt"
+    - SAMPLING_FLAGS="--image_size 64 --batch_size 24 --num_samples 25000 --class_cond True"
+    - python clean_classifier_sample.py $$PATH_FLAGS $$SAMPLING_FLAGS --save_base $$AMLT_OUTPUT_DIR'/64-cond-plug'
+    priority: high
+
+
+
+
+
+  - name: 256-ucond-plug-2-2
+    sku: G1-V100
+    command:
+    - nvidia-smi
+    - PATH_FLAGS="--classifier_path models/256x256_classifier.pt --model_path models/256x256_diffusion_uncond.pt"
+    - SAMPLING_FLAGS="--image_size 256 --batch_size 1 --num_samples 5000 --class_cond False"
+    - python clean_classifier_sample.py $$PATH_FLAGS $$SAMPLING_FLAGS --save_base $$AMLT_OUTPUT_DIR'/256-ucond-plug'
+    priority: high
+
+  - name: 256-cond-plug-2-2
+    sku: G1-V100
+    command:
+    - nvidia-smi
+    - PATH_FLAGS="--classifier_path models/256x256_classifier.pt --model_path models/256x256_diffusion.pt"
+    - SAMPLING_FLAGS="--image_size 256 --batch_size 1 --num_samples 5000 --class_cond True"
+    - python clean_classifier_sample.py $$PATH_FLAGS $$SAMPLING_FLAGS --save_base $$AMLT_OUTPUT_DIR'/256-cond-plug'
+    priority: high
+
+  - name: 128-cond-plug-2-2
+    sku: G1-V100
+    command:
+    - nvidia-smi
+    - PATH_FLAGS="--classifier_path models/128x128_classifier.pt --model_path models/128x128_diffusion.pt"
+    - SAMPLING_FLAGS="--image_size 128 --batch_size 8 --num_samples 12500 --class_cond True"
+    - python clean_classifier_sample.py $$PATH_FLAGS $$SAMPLING_FLAGS --save_base $$AMLT_OUTPUT_DIR'/128-cond-plug'
+    priority: high
+
+
+
+
+
+
+
+
+
+  - name: 256-ucond-plug-3-2
+    sku: G1-V100
+    command:
+    - nvidia-smi
+    - PATH_FLAGS="--classifier_path models/256x256_classifier.pt --model_path models/256x256_diffusion_uncond.pt"
+    - SAMPLING_FLAGS="--image_size 256 --batch_size 1 --num_samples 5000 --class_cond False"
+    - python clean_classifier_sample.py $$PATH_FLAGS $$SAMPLING_FLAGS --save_base $$AMLT_OUTPUT_DIR'/256-ucond-plug'
+    priority: high
+
+  - name: 256-cond-plug-3-2
+    sku: G1-V100
+    command:
+    - nvidia-smi
+    - PATH_FLAGS="--classifier_path models/256x256_classifier.pt --model_path models/256x256_diffusion.pt"
+    - SAMPLING_FLAGS="--image_size 256 --batch_size 1 --num_samples 5000 --class_cond True"
+    - python clean_classifier_sample.py $$PATH_FLAGS $$SAMPLING_FLAGS --save_base $$AMLT_OUTPUT_DIR'/256-cond-plug'
+    priority: high
+
+
+
+
+
+
+
+  - name: 256-ucond-plug-4-2
+    sku: G1-V100
+    command:
+    - nvidia-smi
+    - PATH_FLAGS="--classifier_path models/256x256_classifier.pt --model_path models/256x256_diffusion_uncond.pt"
+    - SAMPLING_FLAGS="--image_size 256 --batch_size 1 --num_samples 5000 --class_cond False"
+    - python clean_classifier_sample.py $$PATH_FLAGS $$SAMPLING_FLAGS --save_base $$AMLT_OUTPUT_DIR'/256-ucond-plug'
+    priority: high
+
+  - name: 256-cond-plug-4-2
+    sku: G1-V100
+    command:
+    - nvidia-smi
+    - PATH_FLAGS="--classifier_path models/256x256_classifier.pt --model_path models/256x256_diffusion.pt"
+    - SAMPLING_FLAGS="--image_size 256 --batch_size 1 --num_samples 5000 --class_cond True"
+    - python clean_classifier_sample.py $$PATH_FLAGS $$SAMPLING_FLAGS --save_base $$AMLT_OUTPUT_DIR'/256-cond-plug'
+    priority: high
+
+
+
+
+
+
+  - name: 256-ucond-plug-5-2
+    sku: G1-V100
+    command:
+    - nvidia-smi
+    - PATH_FLAGS="--classifier_path models/256x256_classifier.pt --model_path models/256x256_diffusion_uncond.pt"
+    - SAMPLING_FLAGS="--image_size 256 --batch_size 1 --num_samples 5000 --class_cond False"
+    - python clean_classifier_sample.py $$PATH_FLAGS $$SAMPLING_FLAGS --save_base $$AMLT_OUTPUT_DIR'/256-ucond-plug'
+    priority: high
+
+  - name: 256-cond-plug-5-2
+    sku: G1-V100
+    command:
+    - nvidia-smi
+    - PATH_FLAGS="--classifier_path models/256x256_classifier.pt --model_path models/256x256_diffusion.pt"
+    - SAMPLING_FLAGS="--image_size 256 --batch_size 1 --num_samples 5000 --class_cond True"
+    - python clean_classifier_sample.py $$PATH_FLAGS $$SAMPLING_FLAGS --save_base $$AMLT_OUTPUT_DIR'/256-cond-plug'
+    priority: high
